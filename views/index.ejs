@@ -1,0 +1,35 @@
+<%- include("header"); -%>
+
+<div class="box" id="heading">
+  <h1><%= date %></h1>
+</div>
+<div class="box">
+  <% categories.forEach(function(category) { %>
+  <form action="/delete" method="post">
+    <div class="item">
+      <input
+        type="checkbox"
+        name="itemCheckbox"
+        onchange="this.form.submit()"
+        value="<%=category._id.toString()%>"
+      />
+      <p>
+        <a href="/categories/<%=encodeURIComponent(category.name)%>">
+          <%= category.name %>
+        </a>
+      </p>
+    </div>
+  </form>
+  <% }) %>
+  <form class="item" action="/" method="post">
+    <input
+      type="text"
+      name="newCategory"
+      placeholder="New List Category"
+      autocomplete="off"
+    />
+    <button type="submit" name="button">+</button>
+  </form>
+</div>
+
+<%- include("footer"); -%>
