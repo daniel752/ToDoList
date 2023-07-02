@@ -4,7 +4,8 @@ const mongoose = require("mongoose");
 
 const app = express();
 const port = 8000;
-const mongoUrl = "mongodb://127.0.0.1:27017/toDoListDB";
+const mongoUrl =
+  "mongodb+srv://daniel752:Diego752!@todolistdb.cirph5k.mongodb.net/?retryWrites=true&w=majority";
 const Schema = mongoose.Schema;
 
 mongoose.connect(mongoUrl, { useNewUrlParser: true });
