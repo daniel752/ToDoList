@@ -4,8 +4,7 @@ const mongoose = require("mongoose");
 
 const app = express();
 const port = 8000;
-const mongoUrl =
-  "mongodb+srv://daniel752:Diego752!@todolistdb.cirph5k.mongodb.net/?retryWrites=true&w=majority";
+const mongoUrl = process.env.DB_URL;
 const Schema = mongoose.Schema;
 
 mongoose.connect(mongoUrl, { useNewUrlParser: true });
@@ -38,39 +37,25 @@ function getFormattedDate(date) {
   return date.toLocaleDateString("en-US", options);
 }
 
-function addCategoryToList(newCategory) {
-  var category = new Category({ name: newCategory });
-  category
+async function addCategoryToList(newCategory) {
+  await new Category({ name: newCategory })
     .save()
-    .then((savedCategory) => {
-      console.log(`Saved category ${savedCategory}`);
-    })
+    .then((savedCategory) => {})
     .catch((err) => {
       console.log(err);
     });
-  categories.push(category);
 }
 
 async function addItemToList(newItem, categoryName) {
   const category = await Category.findOne({ name: categoryName })
     .populate("items")
     .exec();
-  console.log(newItem);
   const item = new Item({ name: newItem });
   item.category = category._id; // Associate the item with the category
   const savedItem = await item.save();
   category.items.push(savedItem);
-  console.log(category.items);
   await category.save();
   return category.items;
-}
-
-function handleError(err, type, name) {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log(`Added ${type} ${name} to DB`);
-  }
 }
 
 async function getCategoriesFromDB() {
@@ -87,20 +72,7 @@ async function getCategoryItemsFromDB(requestedCategory) {
   const category = await Category.findOne({ name: requestedCategory })
     .populate("items")
     .exec();
-  console.log(category.items);
   return category.items;
-  // try {
-  //   const category = await Category.findOne({
-  //     name: requestedCategory,
-  //   })
-  //     .populate("items")
-  //     .exec();
-  //   console.log(category.items);
-  //   return category.items;
-  // } catch (error) {
-  //   console.log(error);
-  //   throw error;
-  // }
 }
 
 app.set("view engine", "ejs");
@@ -132,7 +104,6 @@ app.post("/", function (req, res) {
 app.get("/categories/:category", async function (req, res) {
   try {
     const requestedCategory = req.params.category;
-    console.log(`Requested category: ${requestedCategory}`);
     const items = await getCategoryItemsFromDB(requestedCategory);
     res.render("list", {
       listTitle: requestedCategory,
@@ -148,7 +119,6 @@ app.post("/categories/:category", async function (req, res) {
   try {
     const categoryName = req.body.listTitle;
     const item = req.body.newItem;
-    console.log(`New item to add: ${item}`);
     const items = await addItemToList(item, categoryName);
     res.render("list", {
       listTitle: categoryName,
@@ -163,7 +133,6 @@ app.post("/categories/:category", async function (req, res) {
 app.post("/delete", async function (req, res) {
   if (req.body.itemCheckbox) {
     const checkedCategoryId = req.body.itemCheckbox;
-    console.log(checkedCategoryId);
     const category = await Category.findById(checkedCategoryId, "items").exec();
     const ids = [];
     category.items.forEach((item) => {
