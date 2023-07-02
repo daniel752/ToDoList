@@ -62,7 +62,8 @@ async function addItemToList(newItem, categoryName) {
 
 async function getCategoriesFromDB() {
   try {
-    const categoryCollection = await Category.find({});
+    const categoryCollection = await Category.find({}).exec();
+    console.log(categoryCollection);
     return categoryCollection;
   } catch (error) {
     console.log(error);
@@ -97,7 +98,7 @@ app.get("/", async function (req, res) {
   }
 });
 
-app.post("/", function (req, res) {
+app.post("/", async function (req, res) {
   var category = req.body.newCategory;
   addCategoryToList(category);
   res.redirect("/");
