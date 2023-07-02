@@ -155,6 +155,6 @@ app.post("/categories/:category/delete", async function (req, res) {
   }
 });
 
-app.listen(process.port || port, () => {
-  console.log(`Server listening on port ${process.port || port}`);
+app.listen(process.env.port || port, () => {
+  console.log(`Server listening on port ${process.env.port || port}`);
 });
