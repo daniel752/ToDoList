@@ -63,7 +63,6 @@ async function addItemToList(newItem, categoryName) {
 async function getCategoriesFromDB() {
   try {
     const categoryCollection = await Category.find({}).exec();
-    console.log(categoryCollection);
     return categoryCollection;
   } catch (error) {
     console.log(error);
